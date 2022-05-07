@@ -27,7 +27,7 @@ class RayGradientCalculator(object):
 
     def _initialize(self):
         self.initializer = {
-            'layers': self.model.layers,
+            'nn': self.model.layers,
             'loss_set': (self.model.loss, self.model.loss_d),
             'dtype': self.model.dtype,
             'initialize': False

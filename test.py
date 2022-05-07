@@ -1,44 +1,36 @@
-from model import Model, layer
-from activators import sigmoid_activator
-from losses import mse_loss_set
-from rmsprop_optim import RMSPropOptimizer
-from gradient_calc import RayGradientCalculator
 import numpy as np
 
-print('testing...')
+from autograd.tensor import Tensor
+from nn.layers import Sequential, Linear
 
-layout = (
-    layer(2, None),
-    layer(2, sigmoid_activator),
-    layer(1, None)
-)
+if __name__ == '__main__':
+    t = Tensor([
+        [1, 2, 3],
+        [4, 5, 6]
+    ])
 
-xor_model = Model(layout, mse_loss_set)
+    print(t / Tensor([
+        [1, 2, 3],
+    ]))
 
-grad_calc = RayGradientCalculator(xor_model, 4)
-optimizer = RMSPropOptimizer(xor_model, 0.1, 0.01, 0.01)
 
-dataset = [
-    (np.array([0, 0]), np.array([0])),
-    (np.array([0, 1]), np.array([1])),
-    (np.array([1, 0]), np.array([1])),
-    (np.array([1, 1]), np.array([0])),
-]
+    def optimize(layer, alpha=0.001):
+        for param in layer.params():
+            param.data -= param.grad * alpha
 
-for inp, tar in dataset:
-    print(inp, xor_model.forward(inp))
-print()
 
-for epoch in range(4000):
-#     print(epoch)
-    if epoch % 400 == 0:
-        print('epoch:', epoch)
-        for inp, tar in dataset:
-            print(inp, xor_model.forward(inp))
-        # xor_model.log_pool_info()
-        print('--------------------')
-    grad = grad_calc.run(dataset)
-    optimizer.step(grad)
+    seq = Sequential(
+        Linear(10, 20),
+        Linear(20, 30),
+        Linear(30, 10),
+    )
 
-for inp, tar in dataset:
-    print(inp, xor_model.forward(inp))
+    inp = Tensor([1, 2, 3, 4, 5, 6, 7, 8, 9, 0])
+    res = seq.forward(inp)
+    res.backward()
+
+    optimize(seq)
+
+    res.zero_grad()
+
+    print('done!')

@@ -59,7 +59,7 @@ class Model(object):
         bias = int(self.has_bias(layer))
         return self.layer(layer)['neurons'] + bias
 
-    # returns the amount of layers in the model
+    # returns the amount of nn in the model
     def count_layers(self):
         return len(self.layers)
 
